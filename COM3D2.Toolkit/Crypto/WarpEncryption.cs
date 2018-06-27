@@ -5,82 +5,59 @@ using System.Text;
 
 namespace COM3D2.Toolkit.Crypto
 {
-	public class WarpEncryption
-	{
-		public static byte[] GenerateIV(byte[] iv_seed)
-		{
-			uint[] seed =
-			{
-				0x075BCD15,
-				0x159A55E5,
-				0x1F123BB5,
-				BitConverter.ToUInt32(iv_seed, 1) ^ 0xBFBFBFBF
-			};
+    public static class WarpEncryption
+    {
+        private static readonly Encoding ShiftJisEncoding = Encoding.GetEncoding(932);
 
-			for (int i = 0; i < 4; i++)
-			{
-				uint n = seed[0] ^ (seed[0] << 11);
-				seed[0] = seed[1];
-				seed[1] = seed[2];
-				seed[2] = seed[3];
-				seed[3] = n ^ seed[3] ^ (n ^ (seed[3] >> 11)) >> 8;
-			}
-            
-			byte[] output = new byte[16];
+        public static byte[] GenerateIV(byte[] ivSeed)
+        {
+            uint[] seed = {0x075BCD15, 0x159A55E5, 0x1F123BB5, BitConverter.ToUInt32(ivSeed, 1) ^ 0xBFBFBFBF};
 
-			Buffer.BlockCopy(seed, 0, output, 0, 16);
+            for (var i = 0; i < 4; i++)
+            {
+                var n = seed[0] ^ (seed[0] << 11);
+                seed[1] = seed[2];
+                seed[2] = seed[3];
+                seed[3] = n ^ seed[3] ^ ((n ^ (seed[3] >> 11)) >> 8);
+            }
 
-			return output;
-		}
+            var output = new byte[16];
 
-		public static readonly byte[] Key = { 0x57, 0x79, 0xB9, 0xEC, 0x53, 0xD8, 0x48, 0x9F, 0xA9, 0x13, 0x00, 0xC5, 0x03, 0xB3, 0x56, 0x96 };
+            Buffer.BlockCopy(seed, 0, output, 0, 16);
 
-		public readonly byte[] IV;
+            return output;
+        }
 
-		protected byte[] IVSeed;
+        public static byte[] DecryptBytes(byte[] encryptedBytes, byte[] key)
+        {
+            var ivSeed = new byte[5];
+            Array.Copy(encryptedBytes, encryptedBytes.Length - 5, ivSeed, 0, 5);
 
-		protected int BlockSize;
+            var iv = GenerateIV(ivSeed);
 
-		public WarpEncryption(byte[] header)
-		{
-			IVSeed = new byte[5];
+            using (var rijndael = new RijndaelManaged())
+            {
+                rijndael.Padding = PaddingMode.None;
 
-			Array.Copy(header, header.Length - 5, IVSeed, 0, 5);
+                using (var decryptor = rijndael.CreateDecryptor(key, iv))
+                    using (var mem = new MemoryStream(encryptedBytes, 0, encryptedBytes.Length - 5))
+                        using (var stream = new CryptoStream(mem, decryptor, CryptoStreamMode.Read))
+                        {
+                            //if (blocksize == 0)
+                            //don't care about blocksize?
 
-			IV = GenerateIV(IVSeed);
+                            var output = new byte[encryptedBytes.Length - 5];
 
-			BlockSize = IVSeed[0] ^ IVSeed[1];
-		}
+                            stream.Read(output, 0, output.Length);
 
-		public byte[] DecryptBytes(byte[] input)
-		{
-			using (var rijndael = new RijndaelManaged())
-			 {
-				rijndael.Padding = PaddingMode.None;
+                            return output;
+                        }
+            }
+        }
 
-				using (ICryptoTransform decryptor = rijndael.CreateDecryptor(Key, IV))
-				using (var mem = new MemoryStream(input))
-				using (var stream = new CryptoStream(mem, decryptor, CryptoStreamMode.Read))
-				{
-					//if (blocksize == 0)
-					//don't care about blocksize?
-
-					byte[] output = new byte[input.Length];
-
-					{
-						stream.Read(output, 0, input.Length);
-					}
-
-					return output;
-				}
-			}
-		}
-
-		private Encoding sjisEncoding = Encoding.GetEncoding(932);
-
-		public string DecryptString(byte[] input)
-		{
-			return sjisEncoding.GetString(DecryptBytes(input)).TrimEnd('\0');
-		}
-	}
+        public static string DecryptString(byte[] encryptedBytes, byte[] key)
+        {
+            return ShiftJisEncoding.GetString(DecryptBytes(encryptedBytes, key)).TrimEnd('\0');
+        }
+    }
 }

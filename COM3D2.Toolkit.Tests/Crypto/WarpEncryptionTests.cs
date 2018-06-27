@@ -33,17 +33,17 @@ namespace COM3D2.Toolkit.Tests.Crypto
 		[TestMethod]
 		public void DecryptBytesTest()
 		{
-			WarpArc arc = WarpArc.Read(File.OpenRead(@"M:\COM3D2\GameData_20\model_denkigai2015s003_2.arc"));
+			//WarpArc arc = WarpArc.Read(File.OpenRead(@"M:\COM3D2\GameData_20\model_denkigai2015s003_2.arc"));
 
-			var enc = new WarpEncryption(testHeader);
+			//var enc = new WarpEncryption(testHeader);
 
-			var s = enc.DecryptString(dfjd);
+			//var s = enc.DecryptString(dfjd);
 
-			byte[] filenameBytes = new byte[testHeader.Length - 5];
+			//byte[] filenameBytes = new byte[testHeader.Length - 5];
 
-			Array.Copy(testHeader, 0, filenameBytes, 0, testHeader.Length - 5);
+			//Array.Copy(testHeader, 0, filenameBytes, 0, testHeader.Length - 5);
 
-			string output = Encoding.ASCII.GetString(enc.DecryptBytes(filenameBytes)).TrimEnd('\0');
+			//string output = Encoding.ASCII.GetString(enc.DecryptBytes(filenameBytes)).TrimEnd('\0');
 		}
 	}
 }
