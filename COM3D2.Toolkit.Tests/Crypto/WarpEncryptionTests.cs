@@ -21,14 +21,33 @@ namespace COM3D2.Toolkit.Tests.Crypto
 		{
 			//byte[] testData = {0x00, 0x40, 0x63, 0x9D, 0x8A};
 
-			byte[] iv_seed = new byte[5];
+			byte[] ivSeed = new byte[5];
 
-			Array.Copy(testHeader, testHeader.Length - 5, iv_seed, 0, 5);
+			Array.Copy(testHeader, testHeader.Length - 5, ivSeed, 0, 5);
 
-			byte[] output = WarpEncryption.GenerateIV(iv_seed);
+			byte[] output = WarpEncryption.GenerateIV(ivSeed);
 
 			string o = BitConverter.ToString(output);
 		}
+
+        [TestMethod]
+	    public void GenerateEncKeyTest()
+        {
+            byte[] bytes;
+            using (BinaryReader br = new BinaryReader(File.OpenRead("model_dlc005.arc")))
+                bytes = br.ReadBytes(2048);
+
+            byte[] key = WarpEncryption.ComputeWarcKey(bytes);
+
+            string o = BitConverter.ToString(key);
+        }
+
+        [TestMethod]
+	    public void DecryptWarpToWarcTest()
+        {
+            using (MemoryStream ms = WarpArc.DecryptWarp(File.OpenRead("model_dlc005_2.arc")))
+                File.WriteAllBytes("model_dlc005_2_decrypted.arc", ms.ToArray());
+        }
 
 		[TestMethod]
 		public void DecryptBytesTest()
