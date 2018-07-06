@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using System.Text;
 using COM3D2.Toolkit.Arc;
 using COM3D2.Toolkit.Crypto;
 

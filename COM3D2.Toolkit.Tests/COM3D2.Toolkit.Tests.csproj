@@ -55,6 +55,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Arc\WarcArcTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Crypto\WarpEncryptionTests.cs" />
   </ItemGroup>

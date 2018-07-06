@@ -9,6 +9,11 @@ namespace COM3D2.Toolkit.Arc
         private static readonly byte[] WarpNameKey =
                 {0x57, 0x79, 0xB9, 0xEC, 0x53, 0xD8, 0x48, 0x9F, 0xA9, 0x13, 0x00, 0xC5, 0x03, 0xB3, 0x56, 0x96};
 
+	    protected WarpArc()
+	    {
+
+	    }
+
         public static MemoryStream DecryptWarp(Stream stream)
         {
             using (var reader = new BinaryReader(stream))
