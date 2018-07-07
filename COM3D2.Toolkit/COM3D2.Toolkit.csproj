@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -41,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArcException.cs" />
+    <Compile Include="Arc\Files\ArcDirectoryEntry.cs" />
     <Compile Include="Arc\Files\ArcEntry.cs" />
     <Compile Include="Arc\Files\ArcFileEntry.cs" />
     <Compile Include="Arc\WarcArc.cs" />
