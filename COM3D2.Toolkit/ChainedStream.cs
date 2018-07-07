@@ -5,131 +5,125 @@ using System.Linq;
 
 namespace COM3D2.Toolkit
 {
-	public class ChainedStream : Stream
-	{
-		protected List<Stream> BackingStreams = new List<Stream>();
-		protected long[] BaseOffsets;
+    public class ChainedStream : Stream
+    {
+        protected List<Stream> BackingStreams;
+        protected long[] BaseOffsets;
 
-		public override bool CanRead => BackingStreams.All(x => x.CanRead);
+        public ChainedStream(params Stream[] streams) : this(streams.AsEnumerable()) { }
 
-		public override bool CanSeek => BackingStreams.All(x => x.CanSeek);
+        public ChainedStream(IEnumerable<Stream> streams)
+        {
+            BackingStreams = new List<Stream>(streams);
+            BaseOffsets = BackingStreams.Select(x => x.Position).ToArray();
+        }
 
-		public override bool CanWrite => BackingStreams.All(x => x.CanWrite);
+        public override bool CanRead => BackingStreams.All(x => x.CanRead);
 
+        public override bool CanSeek => BackingStreams.All(x => x.CanSeek);
 
-		public override long Length => BackingStreams.Sum(x => x.Length);
+        public override bool CanWrite => BackingStreams.All(x => x.CanWrite);
 
-		public override long Position
-		{
-			get => BackingStreams.Select((t, i) => t.Position - BaseOffsets[i]).Sum();
-			set
-			{
-				long pos = value;
+        public override long Length => BackingStreams.Sum(x => x.Length);
 
-				for (int i = 0; i < BackingStreams.Count; i++)
-				{
-					long length = BackingStreams[i].Length - BaseOffsets[i];
+        public override long Position
+        {
+            get => BackingStreams.Select((t, i) => t.Position - BaseOffsets[i]).Sum();
+            set
+            {
+                long pos = value;
 
-					BackingStreams[i].Position = Math.Min(pos, length) + BaseOffsets[i];
-					pos -= length;
+                for (int i = 0; i < BackingStreams.Count; i++)
+                {
+                    long length = BackingStreams[i].Length - BaseOffsets[i];
 
-					if (pos < 0)
-						pos = 0;
-				}
-			}
-		}
+                    BackingStreams[i].Position = Math.Min(pos, length) + BaseOffsets[i];
+                    pos -= length;
 
-		public ChainedStream(params Stream[] streams) : this(streams.AsEnumerable())
-		{
-			
-		}
+                    if (pos < 0)
+                        pos = 0;
+                }
+            }
+        }
 
-		public ChainedStream(IEnumerable<Stream> streams)
-		{
-			BackingStreams = new List<Stream>(streams);
-			BaseOffsets = streams.Select(x => x.Position).ToArray();
-		}
+        public override void Flush()
+        {
+            foreach (Stream stream in BackingStreams)
+                stream.Flush();
+        }
 
-		public override void Flush()
-		{
-			foreach (var stream in BackingStreams)
-				stream.Flush();
-		}
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            switch (origin)
+            {
+                case SeekOrigin.Begin:
+                    Position = offset;
+                    break;
+                case SeekOrigin.Current:
+                default:
+                    Position += offset;
+                    break;
+                case SeekOrigin.End:
+                    Position = Length + offset;
+                    break;
+            }
 
-		public override long Seek(long offset, SeekOrigin origin)
-		{
-			switch (origin)
-			{
-				case SeekOrigin.Begin:
-					Position = offset;
-					break;
-				case SeekOrigin.Current:
-				default:
-					Position += offset;
-					break;
-				case SeekOrigin.End:
-					Position = Length + offset;
-					break;
-			}
+            return Position;
+        }
 
-			return Position;
-		}
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
 
-		public override void SetLength(long value)
-		{
-			throw new NotSupportedException();
-		}
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            int read = 0;
 
-		protected Stream GetCurrentStream()
-		{
-			long position = Position;
+            while (count > 0)
+            {
+                Stream currentStream = GetCurrentStream();
 
-			for (int i = 0; i < BackingStreams.Count; i++)
-			{
-				Stream stream = BackingStreams[i];
+                if (currentStream.Position == currentStream.Length) //end of last stream
+                    break;
 
-				if (position < stream.Length)
-					return stream;
+                int canRead = (int) (currentStream.Length - currentStream.Position);
+                int localRead = currentStream.Read(buffer, offset, Math.Min(count, canRead));
 
-				position -= stream.Length;
-			}
+                offset += localRead;
+                read += localRead;
+                count -= localRead;
+            }
 
-			return BackingStreams.Last();
-		}
+            return read;
+        }
 
-		public override int Read(byte[] buffer, int offset, int count)
-		{
-			int read = 0;
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
 
-			while (count > 0)
-			{
-				Stream currentStream = GetCurrentStream();
+        protected Stream GetCurrentStream()
+        {
+            long position = Position;
 
-				if (currentStream.Position == currentStream.Length) //end of last stream
-					break;
+            foreach (Stream stream in BackingStreams)
+            {
+                if (position < stream.Length)
+                    return stream;
 
-				int canRead = (int)(currentStream.Length - currentStream.Position);
-				int localRead = currentStream.Read(buffer, offset, Math.Min(count, canRead));
+                position -= stream.Length;
+            }
 
-				offset += localRead;
-				read += localRead;
-				count -= localRead;
-			}
+            return BackingStreams.Last();
+        }
 
-			return read;
-		}
+        protected override void Dispose(bool disposing)
+        {
+            foreach (Stream stream in BackingStreams)
+                stream.Dispose();
 
-		public override void Write(byte[] buffer, int offset, int count)
-		{
-			throw new NotSupportedException();
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			foreach (var stream in BackingStreams)
-				stream.Dispose();
-
-			base.Dispose(disposing);
-		}
-	}
+            base.Dispose(disposing);
+        }
+    }
 }

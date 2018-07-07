@@ -17,7 +17,7 @@ namespace COM3D2.Toolkit.Arc
 
         public WarpArc(byte[] data, Func<string, Stream> warcFunc) : this(() => new MemoryStream(data), warcFunc) { }
 
-        public WarpArc(byte[] data, byte[] decryptionKey) : this(() => new MemoryStream(data), _ => new MemoryStream(decryptionKey)) { }
+        public WarpArc(byte[] data, byte[] decryptionSeed) : this(() => new MemoryStream(data), _ => new MemoryStream(decryptionSeed)) { }
 
         public WarpArc(Func<Stream> streamGen, Func<string, Stream> warcFunc)
         {
