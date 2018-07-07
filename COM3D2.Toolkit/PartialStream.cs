@@ -75,8 +75,8 @@ namespace COM3D2.Toolkit
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			if (Position + offset + count > Length)
-				count = (int)(Length - (offset + Position));
+			if (Position + count > Length)
+				count = (int)(Length - Position);
 
 			BaseStream.Read(buffer, offset, count);
 
@@ -85,8 +85,8 @@ namespace COM3D2.Toolkit
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			if (Position + offset + count > Length)
-				count = (int)(Length - (offset + Position));
+			if (Position + count > Length)
+				count = (int)(Length - Position);
 
 			BaseStream.Write(buffer, offset, count);
 		}

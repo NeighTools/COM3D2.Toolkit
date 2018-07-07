@@ -29,6 +29,6 @@ namespace COM3D2.Toolkit.Arc.Files
 
 		public ArcEntry Parent { get; protected set; }
 
-		public IEnumerable<ArcEntry> Children { get; protected set; }
+		public IEnumerable<ArcEntry> Children { get; set; }
 	}
 }

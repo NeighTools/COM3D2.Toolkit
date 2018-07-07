@@ -29,7 +29,10 @@ namespace COM3D2.Toolkit.Arc
 
 		public IEnumerable<ArcEntry> Entries { get; protected set; }
 
+		protected WarcArc()
+		{
 
+		}
 
 		public WarcArc(string filename) : this(() => File.OpenRead(filename))
 		{
@@ -119,21 +122,33 @@ namespace COM3D2.Toolkit.Arc
 			Queue<FileHashTable> tables = new Queue<FileHashTable>();
 			tables.Enqueue(utf16Footer);
 
-			List<ArcEntry> entries = new List<ArcEntry>();
-
-			Entries = entries;
-
-			while (tables.Count != 0)
+			List<ArcEntry> GetEntriesRecursive(ArcEntry parent, FileHashTable hashTable)
 			{
-				FileHashTable table = tables.Dequeue();
+				List<ArcEntry> entries = new List<ArcEntry>();
 
-				entries.AddRange(table.FileEntries.Select(x =>
+				foreach (var fileEntry in hashTable.FileEntries)
 				{
-					var file = ArcFileEntry.Read(reader, x.Offset, this);
-					file.Name = nameLookup[x.Hash];
-					return (ArcEntry)file;
-				}));
+					var file = ArcFileEntry.Read(reader, fileEntry.Offset + EndOfHeaderOffset, this, parent);
+					file.Name = nameLookup[fileEntry.Hash];
+					entries.Add(file);
+				}
+
+				for (int i = 0; i < hashTable.Dirs; i++)
+				{
+					var dir = hashTable.DirEntries[i];
+
+					var child = ArcFileEntry.Read(reader, dir.Offset + EndOfHeaderOffset, this, parent);
+					child.Name = nameLookup[dir.Hash];
+
+					child.Children = GetEntriesRecursive(child, hashTable.SubdirEntries[i]);
+
+					entries.Add(child);
+				}
+
+				return entries;
 			}
+
+			Entries = GetEntriesRecursive(null, utf16Footer);
 		}
 	}
 }

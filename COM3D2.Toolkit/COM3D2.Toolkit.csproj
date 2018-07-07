@@ -44,6 +44,7 @@
     <Compile Include="Arc\Files\ArcFileEntry.cs" />
     <Compile Include="Arc\WarcArc.cs" />
     <Compile Include="Arc\WarpArc.cs" />
+    <Compile Include="ChainedStream.cs" />
     <Compile Include="Crypto\WarpEncryption.cs" />
     <Compile Include="Native\Extensions.cs" />
     <Compile Include="Native\DataHasher.cs" />

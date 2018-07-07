@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 
 namespace COM3D2.Toolkit.Arc.Files
@@ -13,16 +14,13 @@ namespace COM3D2.Toolkit.Arc.Files
 
 		public bool Deflated { get; protected set; }
 
-		protected ArcFileEntry()
-		{
-
-		}
-
-		internal static ArcFileEntry Read(BinaryReader reader, long offset, WarcArc arc)
+		internal static ArcFileEntry Read(BinaryReader reader, long offset, WarcArc arc, ArcEntry parent = null, IEnumerable<ArcEntry> children = null)
 		{
 			ArcFileEntry file = new ArcFileEntry
 			{
-				Archive = arc
+				Archive = arc,
+				Parent = parent,
+				Children = children
 			};
 
 			reader.BaseStream.Position = offset;
