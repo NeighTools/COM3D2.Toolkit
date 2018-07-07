@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 using COM3D2.Toolkit.Arc;
-using COM3D2.Toolkit.Crypto;
+using COM3D2.Toolkit.Native;
 
 namespace COM3D2.Toolkit.Tests.Crypto
 {
@@ -44,8 +44,14 @@ namespace COM3D2.Toolkit.Tests.Crypto
         [TestMethod]
 	    public void DecryptWarpToWarcTest()
         {
-            using (MemoryStream ms = WarpArc.DecryptWarp(File.OpenRead("model_dlc005_2.arc")))
-                File.WriteAllBytes("model_dlc005_2_decrypted.arc", ms.ToArray());
+            using (Stream s = WarpArc.DecryptWarp(File.OpenRead("model_dlc005_2.arc"), File.OpenRead))
+                using (Stream sw = File.Create("model_dlc005_2_decrypted.arc"))
+                {
+                    var buffer = new byte[32768];
+                    int len;
+                    while((len = s.Read(buffer, 0, buffer.Length)) > 0)
+                        sw.Write(buffer, 0, len);
+                }
         }
 
 		[TestMethod]

@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,7 +46,8 @@
     <Compile Include="Arc\WarcArc.cs" />
     <Compile Include="Arc\WarpArc.cs" />
     <Compile Include="ChainedStream.cs" />
-    <Compile Include="Crypto\WarpEncryption.cs" />
+    <Compile Include="Native\CRC32.cs" />
+    <Compile Include="Native\WarpEncryption.cs" />
     <Compile Include="Native\Extensions.cs" />
     <Compile Include="Native\DataHasher.cs" />
     <Compile Include="Native\Table.cs" />
