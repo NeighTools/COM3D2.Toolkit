@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using COM3D2.Toolkit.Utils;
 
 namespace COM3D2.Toolkit.Arc.Files
 {

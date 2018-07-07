@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using COM3D2.Toolkit.Arc.Files;
 using COM3D2.Toolkit.Native;
+using COM3D2.Toolkit.Utils;
 
 namespace COM3D2.Toolkit.Arc
 {
@@ -104,9 +105,9 @@ namespace COM3D2.Toolkit.Arc
             var utf16Footer = FileHashTable.Read(new MemoryStream(utf16HashData));
             var nameLookup = NameTable.Read(new MemoryStream(utf16NameData));
 
-			var utf8Flat = Extensions.Flatten(utf8Footer, table => table.SubdirEntries, table => table.FileEntries)
+			var utf8Flat = Utility.Flatten(utf8Footer, table => table.SubdirEntries, table => table.FileEntries)
 				.ToArray();
-			var utf16Flat = Extensions.Flatten(utf16Footer, table => table.SubdirEntries, table => table.FileEntries)
+			var utf16Flat = Utility.Flatten(utf16Footer, table => table.SubdirEntries, table => table.FileEntries)
 				.ToArray();
 
 			if (utf16Flat.Any(e16 => utf8Flat.First(e => e.Offset == e16.Offset).Hash != DataHasher.BaseHasher.GetHashUTF8(nameLookup[e16.Hash])))

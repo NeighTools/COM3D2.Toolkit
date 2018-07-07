@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using System.Linq;
 using COM3D2.Toolkit.Arc;
 using COM3D2.Toolkit.Native;
 
@@ -53,6 +54,14 @@ namespace COM3D2.Toolkit.Tests.Crypto
                         sw.Write(buffer, 0, len);
                 }
         }
+
+        [TestMethod]
+	    public void OpenWarpTest()
+	    {
+            WarpArc warp = new WarpArc("model_dlc005_2.arc");
+
+            Console.Write($"Got {warp.Entries.Count()} entries");
+	    }
 
 		[TestMethod]
 		public void DecryptBytesTest()

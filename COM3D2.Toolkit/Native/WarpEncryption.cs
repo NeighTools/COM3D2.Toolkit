@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using COM3D2.Toolkit.Utils;
 
 namespace COM3D2.Toolkit.Native
 {
