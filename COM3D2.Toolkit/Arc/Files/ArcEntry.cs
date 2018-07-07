@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CM3D2.Toolkit;
+using COM3D2.Toolkit.Native;
 
 namespace COM3D2.Toolkit.Arc.Files
 {

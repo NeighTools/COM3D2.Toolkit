@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CM3D2.Toolkit.Arc.Native
+namespace COM3D2.Toolkit.Native
 {
     internal static class Extensions
     {

@@ -26,7 +26,7 @@ namespace COM3D2.Toolkit.Arc
             using (var reader = new BinaryReader(StreamGen()))
             {
                 if (Encoding.ASCII.GetString(reader.ReadBytes(4)) != "warc")
-                    throw new FileLoadException("Could not decrypt WARP file.");
+                    throw new ArcException("Could not decrypt WARP file.");
 
                 LoadInternal(reader);
             }

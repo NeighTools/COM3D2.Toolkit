@@ -5,7 +5,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace CM3D2.Toolkit
+namespace COM3D2.Toolkit.Native
 {
     /// <summary>
     ///     Packed UInt64, with Individually Accessible Words

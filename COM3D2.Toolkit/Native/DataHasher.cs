@@ -4,7 +4,7 @@
 
 using System.Text;
 
-namespace CM3D2.Toolkit
+namespace COM3D2.Toolkit.Native
 {
     /// <summary>
     ///     Data Hasher

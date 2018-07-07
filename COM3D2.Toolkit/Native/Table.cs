@@ -7,7 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace CM3D2.Toolkit.Arc.Native
+namespace COM3D2.Toolkit.Native
 {
     [StructLayout(LayoutKind.Sequential)]
     internal struct FileHashTable
