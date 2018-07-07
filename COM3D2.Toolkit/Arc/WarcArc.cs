@@ -137,7 +137,7 @@ namespace COM3D2.Toolkit.Arc
 				{
 					var dir = hashTable.DirEntries[i];
 
-					var child = ArcFileEntry.Read(reader, dir.Offset + EndOfHeaderOffset, this, parent);
+					var child = ArcDirectoryEntry.Read(this, parent);
 					child.Name = nameLookup[dir.Hash];
 
 					child.Children = GetEntriesRecursive(child, hashTable.SubdirEntries[i]);
