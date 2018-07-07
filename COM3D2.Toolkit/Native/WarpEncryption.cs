@@ -71,7 +71,7 @@ namespace COM3D2.Toolkit.Native
                 }
             }
 
-            hash = BitConverter.ToUInt32(BitConverter.GetBytes(hash).Reverse().ToArray(), 0);
+            hash = hash.Reverse();
 
             var encKey = new uint[4];
 

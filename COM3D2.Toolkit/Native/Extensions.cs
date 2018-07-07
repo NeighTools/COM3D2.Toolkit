@@ -28,5 +28,16 @@ namespace COM3D2.Toolkit.Native
             foreach (U node in Flatten(elementSelector(element), elementSelector, valueSelector))
                 yield return node;
         }
+
+        public static uint Reverse(this uint self)
+        {
+            // It's stupid, but JIT generates 6 bytes less of ASM this way
+            // :)
+            uint result = (self & 0xFF) << 24;
+            result |= (self & 0xFF00) << 8;
+            result |= (self & 0xFF0000) >> 8;
+            result |= (self & 0xFF000000) >> 24;
+            return result;
+        }
     }
 }
